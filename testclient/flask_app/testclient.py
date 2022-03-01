@@ -51,7 +51,7 @@ def hello_me():
     client = info.get('aud')
 
     if user_id in oidc.credentials_store:
-    
+
         try:
             from oauth2client.client import OAuth2Credentials
             access_token = OAuth2Credentials.from_json(oidc.credentials_store[user_id]).access_token
@@ -86,6 +86,3 @@ def logout():
     oidc.logout()
     return 'Hi, you have been logged out! <a href="/">Return</a>'
 
-
-if __name__ == '__main__':
-    app.run()

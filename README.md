@@ -170,6 +170,27 @@ And voilà, your keycloak IdP should be up and working
 ## Conclusion "Keycloak Setup"
 If you did the tutorial until here? You are awesome. You have now Keycloak IdP, together with Traefik up and running. Keycloak is not yet setup for you. But still, this is great work. Well done!
 
+## Flask/Keyckloak
+
+### Resources
+ 
+* [Minimal Flask (Gist)](https://gist.github.com/thomasdarimont/145dc9aa857b831ff2eff221b79d179a#file-app-py) 
+
+
+> The file `client_secrets.json` contains some informations about `oauth` parameters.
+> Your client in Keycloak need to have the `access-type` set to `confidential` , 
+> then you will have a new tab credentials where you will see the client secret.
+
+
+> If you are using flask without asynchronous support, so **every request will block** the call. To create async support without make difficult, add the gevent worker.
+> With gevent, a new call will spawn a new thread, and you app will be able to receive more requests
+
+``` 
+conda install gevent
+gunicon .... --worker-class gevent
+```
+
+
 ## Final Demo Setup
 Please note; We want to secure an application (ttyd) that comes without built-in authentication and authorization and have therefore configured `traefik`, `keycloak` and `ttyd` in the steps above. 
 
