@@ -1,25 +1,27 @@
 # Docker Keycloak IdP and Traefik Workshop
 ## Introduction
-I am a part-time cyber security lecturer at the software engineering department of the University of Applied Science in Rapperswil Switzerland. My students must learn several programming skills and in almost any web software project some sort of authentication and authorization must be applied. I want my students to spend their time working on the real purpose of the software problem (problem domain), instead of spending hours with authentication and authorization. Needless to say this is a crucial task in a real software project. Read this tutorial and I will show you how to add authentication to any web service that does not have a builtin authentication layer using keycloak IdP and keycloak proxy. 
+
+This work is a fork of [Buetler Ivan](https://github.com/ibuetler) work. Its work was release
+with version 1.x of Traefik and here we update to version 2.x. 
+This tutorial will show you how to add authentication to any web service that does not have a builtin authentication layer using 
+keycloak IdP and keycloak proxy. 
 
 ## Sample Docker Application that comes *without* Authentication
-For the sake of this tutorial I have chosen the ttyd Docker image we want to add authentication using Keycloak. The ttyd application provides web access `bash` to a kali linux machine. The ttyd sample application is not asking for a username and password. You can grab the ttyd docker source from GitHub https://github.com/ibuetler/e1pub/tree/master/docker/hl-kali-docker-ttyd or pull the image from Docker Hub. I will pull and run the docker image below, as this tutorial is not about "how to create docker images/". The ttyd web port is listening on port `7681`. 
+For the sake of this tutorial I have chosen the ttyd Docker image we want to add authentication using Keycloak. 
+The ttyd application provides web access `bash` to a kali linux machine. 
+The ttyd sample application is not asking for a username and password. 
+he ttyd web port is listening on port `7681`.
 
 ```
-docker pull hackinglab/hl-kali-docker-ttyd
-docker run --rm -i -p 7681:7681 hackinglab/hl-kali-docker-ttyd
+docker pull darren/ttyd:latest
+docker run --rm -i -p 7681:7681 darren/ttyd:latest
 CTRL+C will stop the docker 
 ```
-See the screenshot below how to pull and run and test ttyd
+See the screenshot below results of previous commands on running ttyd inside docker
 
 ![ttyd1](images/ttyd1.png)
 
-Please give it a try! I am doing this demo using the latest Hacking-Lab LiveCD from https://livecd.hacking-lab.com/, as the LiveCD has docker and everything already configured and works like charm. If you want to use the Hacking-Lab LiveCD too, please follow the following installation instructions
-
-https://github.com/ibuetler/e1pub/tree/master/hacking-lab-livecd-installation
-
 Once you're good, please stop the docker in the same terminal you have executed "docker run..." by pressing CTRL-C. This will shutdown the ttyd docker service. It must be shutdown for the next steps. 
-
 
 ## Traefik Load Balancing Service
 I run all my docker services `behind` traefik (https://traefik.io/). I do not want to have my (hundreds of) docker services, APIs, RESTful APIs and more directly accessible from the Internet (security). I do not want to create and handle SSL/TLS certificates for every single docker services. In production; I am using an SSL wildcard certificate or Let's Encrypt TLS and point it to the traefik ip address. In development; Traefik is automatically creating self-signed certificates for me. This is what we want in this tutorial. Needless to say, Traefik is a docker service too. 
@@ -31,14 +33,13 @@ Traefik terminates TLS/SSL and routes everything, based on HOST or URL pattern r
 Before we proceed with setting up our traefik docker, please pull the workshop github repo first. This will save you time as the traefik and all other docker-compose.yml files are ready for testing in the workshop repo. 
 
 
-
 ## Pull Workshop Github Repository
 Please pull the workshop repo using the following commands. I have chosen `/opt/git/` as the base directory for this tutorial. Change it to whatever you like or prefer. 
 
 ```
 mkdir -p /opt/git
 cd /opt/git
-git clone https://github.com/ibuetler/docker-keycloak-traefik-workshop.git
+git clone https://github.com/zwergon/docker-keycloak-traefik-workshop.git
 cd /opt/git/docker-keycloak-traefik-workshop/
 ls -al 
 ```
@@ -115,9 +116,6 @@ Due to the self-signed TLS certificates (traefik will generate them on the fly f
 ## Conclusion Step 1-5
 If you did the tutorial until here? This is awesome. Until now you have setup a load balancer (traefik) and you put a service (ttyd) behind the load balancer. You have SSL/TLS up and running and the dynamic registration of your application (ttyd) with traefik works like charm. You have not yet added authentication to it (next step) but still, this is a first success. 
 
-![lion](images/lion.png)
-
-
 
 ## Keycloak Setup
 For the sake of this tutorial I use keycloak, an open-source identity provider `IdP` that runs smoothly with docker. If you don’t know keycloak, I encourage you to get into this project. It is the open source version of the RedHat RH-SSO solution. 
@@ -171,8 +169,6 @@ And voilà, your keycloak IdP should be up and working
 
 ## Conclusion "Keycloak Setup"
 If you did the tutorial until here? You are awesome. You have now Keycloak IdP, together with Traefik up and running. Keycloak is not yet setup for you. But still, this is great work. Well done!
-
-![lion](images/lion.png)
 
 ## Final Demo Setup
 Please note; We want to secure an application (ttyd) that comes without built-in authentication and authorization and have therefore configured `traefik`, `keycloak` and `ttyd` in the steps above. 
@@ -352,8 +348,3 @@ docker-compose logs -f
 
 ## THE END
 After this tutorial you should have an application (ttyd) that comes without authentication and authorization secured using traefik, keycloak and keycloak-gateeeper. The steps taken in this tutorial hopefully have guided you to the end - to a working setup. 
-
-`Thank you, Ivan Bütler`
-
-
-![happy](images/happy.png)

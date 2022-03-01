@@ -1,33 +1,27 @@
-version: "3.6"
+version: '3'
 
 services:
-  traefik:
-    image: traefik:v1.7.4-alpine
-    hostname: traefik.idocker.hacking-lab.com
-    environment:
-      TZ: Europe/Zurich
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.6
+    container_name: reverse-proxy
+    hostname: reverse-proxy
+ 
     ports:
+      # The HTTP port
       - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+      
       - "443:443"
+      
     volumes:
+      # So that Traefik can listen to the Docker events
       - /var/run/docker.sock:/var/run/docker.sock
-    command: >
-      --logLevel='DEBUG'
-      --api.dashboard=true
-      --InsecureSkipVerify=true
-      --entryPoints='Name:http Address::80 Redirect.EntryPoint:https'
-      --entryPoints='Name:https Address::443 TLS'
-      --defaultentrypoints='http,https'
-      --docker
-      --docker.exposedbydefault=true
-      --docker.watch=true
-      --docker.swarmmode=false
-      --docker.endpoint='unix:///var/run/docker.sock'
+      - ./traefik.toml:/traefik.toml
     networks:
-      transit_idp:
-      transit_ttyd:
-    labels:
-      traefik.enable: true
+      - transit_idp
+      - transit_ttyd
 
 
 networks:
@@ -36,4 +30,5 @@ networks:
   transit_ttyd:
     external: true
 
+ 
 

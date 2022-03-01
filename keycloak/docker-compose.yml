@@ -3,40 +3,61 @@ version: "3.4"
 services:
   keycloak_db:
     image: postgres:11.2-alpine
+    hostname: keycloak_db
+    container_name: "keycloak_db"
     environment:
         - POSTGRES_DB=keycloak
         - POSTGRES_USER=keycloak
-        - POSTGRES_PASSWORD=changeme-postgres
-        - POSTGRES_ROOT_PASSWORD=changeme-rootpw
+        - POSTGRES_PASSWORD=password
+        - POSTGRES_ROOT_PASSWORD=password
     networks:
-      transit_idp:
+      - transit_idp
     volumes:
       - ./data:/var/lib/postgresql/data
-    labels:
-      - "traefik.enable=false"
+ 
 
   keycloak:
-    image: jboss/keycloak:latest
+    image: quay.io/keycloak/keycloak:17.0.0
     hostname: keycloak
+    container_name: "keycloak"
     environment:
       - DB_VENDOR=POSTGRES
       - DB_ADDR=keycloak_db
       - DB_DATABASE=keycloak
-      - DB_PORT=5432
       - DB_USER=keycloak
       - DB_SCHEMA=public
-      - DB_PASSWORD=changeme-postgres
-      - PROXY_ADDRESS_FORWARDING=true
-      - KEYCLOAK_LOGLEVEL=INFO
-      - KEYCLOAK_USER=admin
-      - KEYCLOAK_PASSWORD=changeme-keycloak
+      - DB_PASSWORD=password
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      #- KC_HTTPS_CERTIFICATE_FILE=/opt/keycloak/conf/server.crt.pem
+      #- KC_HTTPS_CERTIFICATE_KEY_FILE=/opt/keycloak/conf/server.key.pem
+      #- KC_PROXY=edge
+      #- PROXY_ADDRESS_FORWARDING=true
+      - KEYCLOAK_LOGLEVEL=DEBUG
+      
+    depends_on:
+       - "keycloak_db"
+    
     networks:
-      transit_idp:
+      - transit_idp
+    expose:
+      - 8080
+      
+    #volumes:
+      #- ./server.crt.pem:/opt/keycloak/conf/server.crt.pem
+      #- ./server.key.pem:/opt/keycloak/conf/server.key.pem
+    
     labels:
-      - traefik.port=8443
-      - traefik.frontend.rule=Host:auth.idocker.hacking-lab.com
-      - traefik.protocol=https
-    command: ["-b", "0.0.0.0", "-Dkeycloak.profile.feature.docker=enabled"]
+      - "traefik.enable=true"
+      - "traefik.docker.network=transit_idp"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      #- "traefik.http.services.keycloak.loadbalancer.server.port=8443"
+      - "traefik.http.routers.keycloak.rule=Host(`auth.localhost`)"
+      - "traefik.http.routers.keycloak.entrypoints=http"
+      #- "traefik.http.routers.keycloak.tls=true"
+      #- "traefik.http.routers.keycloak.tls.certResolver=myresolver"
+      
+    command: ["start-dev"]
 
 
 networks:

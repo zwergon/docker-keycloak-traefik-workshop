@@ -1,0 +1,23 @@
+[entryPoints]
+  [entryPoints.http]
+    address = ":80"
+    
+    
+  [entryPoints.https]
+    address = ":443"
+ 
+
+[api]
+  dashboard = true
+  insecure = true
+  
+[log]
+  level = "DEBUG"
+
+  
+[providers.docker]
+  watch = true
+  network = "transit_idp"
+  exposedbydefault=false
+
+

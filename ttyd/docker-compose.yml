@@ -1,16 +1,23 @@
-version: '2'
+version: "3"
+
 services:
 
   ttyd:
-    image: hackinglab/hl-kali-docker-ttyd
+    image: "darren/ttyd:latest"
+    container_name: "ttyd"
     networks:
-      transit_ttyd:
+      - transit_ttyd
+    expose:
+      - 7681
     labels:
-      - "traefik.port=7681"
-      - "traefik.frontend.rule=Host:ttyd.idocker.hacking-lab.com"
-      - "traefik.protocol=http"
+      - "traefik.enable=true"
+      - "traefik.docker.network=transit_ttyd"
+      - "traefik.http.services.ttyd.loadbalancer.server.port=7681"
+      - "traefik.http.routers.ttyd.rule=Host(`ttyd.localhost`)"
+      - "traefik.http.routers.ttyd.entrypoints=http"
 
 
 networks:
   transit_ttyd:
     external: true
+    

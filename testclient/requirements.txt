@@ -1,0 +1,7 @@
+numpy
+pandas
+Unidecode
+gunicorn
+matplotlib
+flask
+pytest

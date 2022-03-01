@@ -1,0 +1,19 @@
+version "3"
+
+
+services:
+
+  testclient:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+      networks:
+      - transit_ttyd
+    ports:
+      - 5000:5000
+
+
+networks:
+  transit_ttyd:
+    external: true
+
